@@ -17,6 +17,12 @@ app.use('*', async (c, next) => {
   await next();
 });
 
+// DEBUG: echoes back request info directly in the response body, for ANY method,
+// so we can see the result in the Network tab without depending on Runtime Logs.
+app.all('/api/debug-echo', (c) => {
+  return c.json({ ok: true, method: c.req.method, path: c.req.path });
+});
+
 // Security headers middleware
 app.use('*', async (c, next) => {
   await next();
