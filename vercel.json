@@ -1,9 +1,10 @@
 {
   "buildCommand": "vite build && node esbuild.vercel.mjs",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/trpc/:path*", "destination": "/api" },
-    { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/((?!trpc/|api/).*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/trpc/(.*)", "dest": "/api" },
+    { "src": "/api/(.*)", "dest": "/api" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
