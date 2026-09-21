@@ -11,6 +11,12 @@ import { rateLimit } from './middleware/rate-limit.js';
 
 export const app = new Hono();
 
+// DEBUG: unmistakable log at the very first point of Hono's middleware chain
+app.use('*', async (c, next) => {
+  console.log('[HONO-ENTRY]', c.req.method, c.req.path);
+  await next();
+});
+
 // Security headers middleware
 app.use('*', async (c, next) => {
   await next();
