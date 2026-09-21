@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Users, Crown, Info, Target, Wrench, CalendarDays, FileText, MessageSquare, Bot, ListTodo } from "lucide-react";
+import { ArrowLeft, Users, Crown, Info, Target, Wrench, CalendarDays, FileText, Bot, ListTodo } from "lucide-react";
 import { trpc } from '@/lib/trpc';
 import { useToast } from "@/hooks/use-toast";
 import { useRole } from "@/hooks/useRole";
@@ -15,7 +15,6 @@ import { ToolsTab } from "@/components/workspace/tabs/ToolsTab";
 import { MeetingsTab } from "@/components/workspace/tabs/MeetingsTab";
 import { SOPsTab } from "@/components/workspace/tabs/SOPsTab";
 import { TasksTab } from "@/components/workspace/tabs/TasksTab";
-import { ChatTab } from "@/components/workspace/tabs/ChatTab";
 import { AgentsTab } from "@/components/workspace/tabs/AgentsTab";
 import { FunctionGeneralInfo } from "@/components/function/FunctionGeneralInfo";
 import { MeasurablesTab } from "@/components/workspace/tabs/MeasurablesTab";
@@ -43,7 +42,7 @@ interface TeamMember extends Profile {
   role: string;
 }
 
-type FunctionTab = 'general' | 'measurables' | 'tools' | 'meetings' | 'sops' | 'tasks' | 'chat' | 'agents';
+type FunctionTab = 'general' | 'measurables' | 'tools' | 'meetings' | 'sops' | 'tasks' | 'agents';
 
 export const TeamPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -154,8 +153,6 @@ export const TeamPage: React.FC = () => {
         return <SOPsTab teamId={id} />;
       case 'tasks':
         return <TasksTab teamId={id} />;
-      case 'chat':
-        return <ChatTab teamId={id} />;
       case 'agents':
         return <AgentsTab functionId={id} />;
       default:
@@ -223,10 +220,6 @@ export const TeamPage: React.FC = () => {
           <TabsTrigger value="tasks" className="data-[state=active]:bg-background rounded-b-none border-b-2 border-transparent data-[state=active]:border-primary">
             <ListTodo className="h-4 w-4 mr-2" />
             Tasks
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="data-[state=active]:bg-background rounded-b-none border-b-2 border-transparent data-[state=active]:border-primary">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
           </TabsTrigger>
           <TabsTrigger value="agents" className="data-[state=active]:bg-background rounded-b-none border-b-2 border-transparent data-[state=active]:border-primary">
             <Bot className="h-4 w-4 mr-2" />
