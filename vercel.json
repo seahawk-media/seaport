@@ -1,5 +1,5 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "vite build && node esbuild.vercel.mjs",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/trpc/:path*", "destination": "/api" },
