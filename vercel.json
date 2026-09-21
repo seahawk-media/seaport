@@ -4,6 +4,6 @@
   "rewrites": [
     { "source": "/trpc/:path*", "destination": "/api" },
     { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!trpc/|api/).*)", "destination": "/index.html" }
   ]
 }
