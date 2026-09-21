@@ -1,8 +1,8 @@
 import { pgTable, text, timestamp, uuid, date, numeric, boolean, integer, jsonb, unique } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
-import { organizations } from './organizations';
-import { profiles } from './profiles';
-import { users } from './auth';
+import { organizations } from './organizations.js';
+import { profiles } from './profiles.js';
+import { users } from './auth.js';
 
 export const trailEvents = pgTable('trail_events', {
   id: uuid('id').primaryKey().defaultRandom(),

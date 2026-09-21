@@ -1,8 +1,8 @@
 import type { Context as HonoContext } from 'hono';
-import { auth } from '../auth/index';
-import { db } from '../db/index';
+import { auth } from '../auth/index.js';
+import { db } from '../db/index.js';
 import { eq } from 'drizzle-orm';
-import { profiles, userRoles } from '../db/schema/index';
+import { profiles, userRoles } from '../db/schema/index.js';
 
 export async function createContext(c: HonoContext) {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });

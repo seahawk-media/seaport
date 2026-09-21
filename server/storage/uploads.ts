@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { randomUUID } from 'crypto';
-import { requireAuth } from '../middleware/auth';
-import { supabaseAdmin } from '../lib/supabase';
+import { requireAuth } from '../middleware/auth.js';
+import { supabaseAdmin } from '../lib/supabase.js';
 
 const MAX_SIZE = parseInt(process.env.UPLOAD_MAX_SIZE || '10485760', 10); // 10MB
 const BUCKET = 'uploads';

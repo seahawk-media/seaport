@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { appRouter } from './trpc/router';
-import { createContext } from './trpc/context';
-import { auth } from './auth/index';
-import { uploadsApp } from './storage/uploads';
-import { rateLimit } from './middleware/rate-limit';
+import { appRouter } from './trpc/router.js';
+import { createContext } from './trpc/context.js';
+import { auth } from './auth/index.js';
+import { uploadsApp } from './storage/uploads.js';
+import { rateLimit } from './middleware/rate-limit.js';
 
 export const app = new Hono();
 

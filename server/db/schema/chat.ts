@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { departments } from './departments';
-import { teams } from './teams';
-import { profiles } from './profiles';
+import { departments } from './departments.js';
+import { teams } from './teams.js';
+import { profiles } from './profiles.js';
 
 export const chatChannels = pgTable('chat_channels', {
   id: uuid('id').primaryKey().defaultRandom(),

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { router, orgProcedure } from '../trpc';
-import { agentConversations, agentMessages } from '../../db/schema/agents';
+import { router, orgProcedure } from '../trpc.js';
+import { agentConversations, agentMessages } from '../../db/schema/agents.js';
 import { eq, and, desc } from 'drizzle-orm';
-import { agentRuntime } from '../../agents/runtime';
+import { agentRuntime } from '../../agents/runtime.js';
 
 export const agentChatRouter = router({
   listConversations: orgProcedure

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, orgProcedure, adminProcedure } from '../trpc';
-import { courses, coursePages, courseProgress } from '../../db/schema/learning';
+import { router, orgProcedure, adminProcedure } from '../trpc.js';
+import { courses, coursePages, courseProgress } from '../../db/schema/learning.js';
 import { eq, and } from 'drizzle-orm';
 
 export const academyRouter = router({

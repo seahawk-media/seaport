@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { app } from './app';
+import { app } from './app.js';
 
 // Serve built frontend in production
 const distPath = join(process.cwd(), 'dist');

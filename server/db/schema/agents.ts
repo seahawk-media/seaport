@@ -1,10 +1,10 @@
 import { pgTable, text, timestamp, uuid, boolean, integer, jsonb, unique } from 'drizzle-orm/pg-core';
-import { organizations } from './organizations';
-import { departments } from './departments';
-import { teams } from './teams';
-import { users } from './auth';
-import { tools } from './operational';
-import { agentTierEnum, conversationStatusEnum, messageRoleEnum, connectionTypeEnum } from './enums';
+import { organizations } from './organizations.js';
+import { departments } from './departments.js';
+import { teams } from './teams.js';
+import { users } from './auth.js';
+import { tools } from './operational.js';
+import { agentTierEnum, conversationStatusEnum, messageRoleEnum, connectionTypeEnum } from './enums.js';
 
 export const agents = pgTable('agents', {
   id: uuid('id').primaryKey().defaultRandom(),

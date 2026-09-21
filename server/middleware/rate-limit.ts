@@ -1,7 +1,7 @@
 import type { Context, Next } from 'hono';
 import { sql } from 'drizzle-orm';
-import { db } from '../db/index';
-import { rateLimits } from '../db/schema/rate-limits';
+import { db } from '../db/index.js';
+import { rateLimits } from '../db/schema/rate-limits.js';
 
 /**
  * Postgres-backed rate limiter — works correctly across multiple serverless

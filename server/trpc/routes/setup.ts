@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { router, publicProcedure } from '../trpc';
-import { organizations, userRoles, invitations } from '../../db/schema/index';
-import { profiles } from '../../db/schema/profiles';
-import { auth } from '../../auth/index';
-import { seedDefaults } from '../../db/seed';
+import { router, publicProcedure } from '../trpc.js';
+import { organizations, userRoles, invitations } from '../../db/schema/index.js';
+import { profiles } from '../../db/schema/profiles.js';
+import { auth } from '../../auth/index.js';
+import { seedDefaults } from '../../db/seed.js';
 import { eq, count } from 'drizzle-orm';
 
 export const setupRouter = router({

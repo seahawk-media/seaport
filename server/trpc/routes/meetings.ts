@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, orgProcedure, adminProcedure } from '../trpc';
-import { meetings } from '../../db/schema/operational';
+import { router, orgProcedure, adminProcedure } from '../trpc.js';
+import { meetings } from '../../db/schema/operational.js';
 import { eq, and } from 'drizzle-orm';
 
 export const meetingsRouter = router({

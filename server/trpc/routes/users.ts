@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { router, adminProcedure, protectedProcedure } from '../trpc';
-import { profiles, userRoles } from '../../db/schema/index';
-import { users } from '../../db/schema/auth';
-import { auth } from '../../auth/index';
+import { router, adminProcedure, protectedProcedure } from '../trpc.js';
+import { profiles, userRoles } from '../../db/schema/index.js';
+import { users } from '../../db/schema/auth.js';
+import { auth } from '../../auth/index.js';
 import { eq, and } from 'drizzle-orm';
 
 export const usersRouter = router({

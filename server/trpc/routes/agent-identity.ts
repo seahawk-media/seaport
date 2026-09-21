@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, adminProcedure, orgProcedure } from '../trpc';
-import { agentIdentity, agentMemories } from '../../db/schema/agents';
+import { router, adminProcedure, orgProcedure } from '../trpc.js';
+import { agentIdentity, agentMemories } from '../../db/schema/agents.js';
 import { eq, and, desc } from 'drizzle-orm';
 
 export const agentIdentityRouter = router({

@@ -1,12 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { db } from '../db/index';
-import { agents, agentMessages, agentConversations, orgAiConfig, agentIdentity, agentMemories } from '../db/schema/agents';
+import { db } from '../db/index.js';
+import { agents, agentMessages, agentConversations, orgAiConfig, agentIdentity, agentMemories } from '../db/schema/agents.js';
 import { eq, and, desc } from 'drizzle-orm';
-import { decrypt } from '../lib/crypto';
-import { getAgentContext } from './context';
-import { broadcast } from '../lib/supabase';
+import { decrypt } from '../lib/crypto.js';
+import { getAgentContext } from './context.js';
+import { broadcast } from '../lib/supabase.js';
 
 // ─── Types ──────────────────────────────────────────────────────────
 

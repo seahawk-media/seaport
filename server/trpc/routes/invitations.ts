@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, adminProcedure, publicProcedure } from '../trpc';
-import { invitations } from '../../db/schema/index';
+import { router, adminProcedure, publicProcedure } from '../trpc.js';
+import { invitations } from '../../db/schema/index.js';
 import { eq, and } from 'drizzle-orm';
 import { randomBytes } from 'crypto';
 

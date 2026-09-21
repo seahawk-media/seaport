@@ -1,9 +1,9 @@
-import { db } from '../db/index';
-import { agents } from '../db/schema/agents';
-import { profiles } from '../db/schema/profiles';
-import { departments } from '../db/schema/departments';
-import { teams, teamMembers } from '../db/schema/teams';
-import { measurables } from '../db/schema/operational';
+import { db } from '../db/index.js';
+import { agents } from '../db/schema/agents.js';
+import { profiles } from '../db/schema/profiles.js';
+import { departments } from '../db/schema/departments.js';
+import { teams, teamMembers } from '../db/schema/teams.js';
+import { measurables } from '../db/schema/operational.js';
 import { eq } from 'drizzle-orm';
 
 export async function getAgentContext(agentId: string) {

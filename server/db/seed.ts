@@ -1,6 +1,6 @@
-import { db } from './index';
-import { positionRoles, departments } from './schema/index';
-import { reviewTemplates } from './schema/hr';
+import { db } from './index.js';
+import { positionRoles, departments } from './schema/index.js';
+import { reviewTemplates } from './schema/hr.js';
 
 export async function seedDefaults(organizationId: string, tx?: typeof db) {
   const conn = tx || db;

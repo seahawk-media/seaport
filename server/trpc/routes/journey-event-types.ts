@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, orgProcedure, adminProcedure } from '../trpc';
-import { journeyEventTypes } from '../../db/schema/hr';
+import { router, orgProcedure, adminProcedure } from '../trpc.js';
+import { journeyEventTypes } from '../../db/schema/hr.js';
 import { eq, and, asc } from 'drizzle-orm';
 
 const DEFAULT_EVENT_TYPES = [

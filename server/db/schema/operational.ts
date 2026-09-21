@@ -1,8 +1,8 @@
 import { pgTable, text, timestamp, uuid, date, numeric, integer, boolean, jsonb } from 'drizzle-orm/pg-core';
-import { organizations } from './organizations';
-import { departments } from './departments';
-import { teams } from './teams';
-import { profiles } from './profiles';
+import { organizations } from './organizations.js';
+import { departments } from './departments.js';
+import { teams } from './teams.js';
+import { profiles } from './profiles.js';
 
 export const measurables = pgTable('measurables', {
   id: uuid('id').primaryKey().defaultRandom(),

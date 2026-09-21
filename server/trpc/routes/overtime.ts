@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, orgProcedure, adminProcedure } from '../trpc';
-import { overtimeEntries } from '../../db/schema/hr';
+import { router, orgProcedure, adminProcedure } from '../trpc.js';
+import { overtimeEntries } from '../../db/schema/hr.js';
 import { eq, and } from 'drizzle-orm';
 
 export const overtimeRouter = router({

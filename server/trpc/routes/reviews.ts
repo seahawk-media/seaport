@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { router, orgProcedure, adminProcedure } from '../trpc';
-import { performanceReviews, reviewTemplates } from '../../db/schema/hr';
+import { router, orgProcedure, adminProcedure } from '../trpc.js';
+import { performanceReviews, reviewTemplates } from '../../db/schema/hr.js';
 import { eq, and } from 'drizzle-orm';
 
 export const reviewsRouter = router({

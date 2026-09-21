@@ -1,7 +1,7 @@
-import { db } from '../db/index';
-import { agents } from '../db/schema/agents';
-import { profiles } from '../db/schema/profiles';
-import { teamMembers } from '../db/schema/teams';
+import { db } from '../db/index.js';
+import { agents } from '../db/schema/agents.js';
+import { profiles } from '../db/schema/profiles.js';
+import { teamMembers } from '../db/schema/teams.js';
 import { eq, and } from 'drizzle-orm';
 
 export async function canAccessAgent(userId: string, agentId: string): Promise<boolean> {

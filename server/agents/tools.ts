@@ -1,5 +1,5 @@
-import { db } from '../db/index';
-import { agentToolConnections } from '../db/schema/agents';
+import { db } from '../db/index.js';
+import { agentToolConnections } from '../db/schema/agents.js';
 import { eq } from 'drizzle-orm';
 
 export async function getAgentTools(agentId: string) {

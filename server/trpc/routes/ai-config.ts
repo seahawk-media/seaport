@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { router, adminProcedure, orgProcedure } from '../trpc';
-import { orgAiConfig } from '../../db/schema/agents';
+import { router, adminProcedure, orgProcedure } from '../trpc.js';
+import { orgAiConfig } from '../../db/schema/agents.js';
 import { eq, and } from 'drizzle-orm';
-import { encrypt } from '../../lib/crypto';
+import { encrypt } from '../../lib/crypto.js';
 
 export const aiConfigRouter = router({
   list: orgProcedure.query(async ({ ctx }) => {
