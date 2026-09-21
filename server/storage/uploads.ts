@@ -1,13 +1,10 @@
 import { Hono } from 'hono';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import { join } from 'path';
 import { randomUUID } from 'crypto';
-import { serveStatic } from '@hono/node-server/serve-static';
 import { requireAuth } from '../middleware/auth';
+import { supabaseAdmin } from '../lib/supabase';
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || '/app/uploads';
 const MAX_SIZE = parseInt(process.env.UPLOAD_MAX_SIZE || '10485760', 10); // 10MB
+const BUCKET = 'uploads';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 
@@ -19,9 +16,6 @@ const MIME_TO_EXT: Record<string, string> = {
 };
 
 export const uploadsApp = new Hono();
-
-// Serve uploaded files
-uploadsApp.get('/uploads/*', serveStatic({ root: UPLOAD_DIR.replace('/uploads', '') }));
 
 // Upload endpoint — requires authentication
 uploadsApp.post('/api/uploads', requireAuth, async (c) => {
@@ -42,16 +36,16 @@ uploadsApp.post('/api/uploads', requireAuth, async (c) => {
 
   const ext = MIME_TO_EXT[file.type] || 'bin';
   const filename = `${randomUUID()}.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Ensure upload directory exists
-  if (!existsSync(UPLOAD_DIR)) {
-    await mkdir(UPLOAD_DIR, { recursive: true });
+  const { error } = await supabaseAdmin.storage.from(BUCKET).upload(filename, buffer, {
+    contentType: file.type,
+  });
+
+  if (error) {
+    return c.json({ error: 'Upload failed' }, 500);
   }
 
-  const filepath = join(UPLOAD_DIR, filename);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filepath, buffer);
-
-  const url = `/uploads/${filename}`;
-  return c.json({ url, filename });
+  const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(filename);
+  return c.json({ url: data.publicUrl, filename });
 });

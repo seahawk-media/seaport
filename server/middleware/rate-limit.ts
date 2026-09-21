@@ -1,45 +1,42 @@
 import type { Context, Next } from 'hono';
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
+import { sql } from 'drizzle-orm';
+import { db } from '../db/index';
+import { rateLimits } from '../db/schema/rate-limits';
 
 /**
- * Simple in-memory rate limiter.
- * For single-instance deployments (no Redis needed).
+ * Postgres-backed rate limiter — works correctly across multiple serverless
+ * instances (unlike an in-memory store, which each instance would keep separately).
+ * The upsert's CASE logic keeps the increment-or-reset atomic under concurrent requests.
  */
 export function rateLimit(opts: {
   windowMs: number;
   max: number;
   message?: string;
+  name: string;
 }) {
-  const store = new Map<string, RateLimitEntry>();
-
-  // Clean up expired entries periodically
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store) {
-      if (entry.resetAt <= now) store.delete(key);
-    }
-  }, 60_000);
-
   return async (c: Context, next: Next) => {
     const ip = c.req.header('x-forwarded-for')?.split(',')[0]?.trim()
       || c.req.header('x-real-ip')
       || 'unknown';
-    const now = Date.now();
-    const entry = store.get(ip);
+    const key = `${opts.name}:${ip}`;
+    const now = new Date();
+    const resetAt = new Date(now.getTime() + opts.windowMs);
 
-    if (!entry || entry.resetAt <= now) {
-      store.set(ip, { count: 1, resetAt: now + opts.windowMs });
-      await next();
-      return;
-    }
+    const [row] = await db
+      .insert(rateLimits)
+      .values({ key, count: 1, resetAt })
+      .onConflictDoUpdate({
+        target: rateLimits.key,
+        set: {
+          count: sql`CASE WHEN ${rateLimits.resetAt} <= now() THEN 1 ELSE ${rateLimits.count} + 1 END`,
+          resetAt: sql`CASE WHEN ${rateLimits.resetAt} <= now() THEN ${resetAt.toISOString()}::timestamptz ELSE ${rateLimits.resetAt} END`,
+        },
+      })
+      .returning({ count: rateLimits.count, resetAt: rateLimits.resetAt });
 
-    entry.count++;
-    if (entry.count > opts.max) {
-      c.header('Retry-After', String(Math.ceil((entry.resetAt - now) / 1000)));
+    if (row.count > opts.max) {
+      const retryAfterSec = Math.max(1, Math.ceil((row.resetAt.getTime() - now.getTime()) / 1000));
+      c.header('Retry-After', String(retryAfterSec));
       return c.json({ error: opts.message || 'Too many requests' }, 429);
     }
 

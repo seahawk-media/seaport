@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
-import { wsClient } from "@/lib/ws";
+import { supabase } from "@/lib/supabase";
 
 interface ChatMessage {
   id: string;
@@ -13,7 +13,6 @@ export function useAgentChat(agentId: string, conversationId: string | null) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
 
   // Load existing messages via tRPC
   const messagesQuery = trpc.agentChat.getMessages.useQuery(
@@ -34,50 +33,31 @@ export function useAgentChat(agentId: string, conversationId: string | null) {
     }
   }, [messagesQuery.data]);
 
-  // WebSocket connection for live messages
+  // Realtime subscription for live agent messages
   useEffect(() => {
-    if (!agentId) return;
+    if (!agentId || !conversationId) return;
 
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    const ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-      setIsConnected(true);
-      // Subscribe to agent conversation channel
-      if (conversationId) {
-        ws.send(JSON.stringify({ type: "subscribe", channel: `agent:${conversationId}` }));
-      }
-    };
-    ws.onclose = () => setIsConnected(false);
-    ws.onerror = () => setIsConnected(false);
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.data?.type === "message" || data.channel?.startsWith("agent:")) {
-          const msgData = data.data || data;
-          setMessages((prev) => {
-            const newMsg: ChatMessage = {
-              id: msgData.id || crypto.randomUUID(),
-              role: msgData.role || "assistant",
-              content: msgData.content,
-              created_at: new Date().toISOString(),
-            };
-            if (prev.some((m) => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
-          if (msgData.role === "assistant") setIsLoading(false);
-        }
-      } catch {
-        // Invalid message
-      }
-    };
-
-    wsRef.current = ws;
+    const channel = supabase
+      .channel(`agent:${conversationId}`)
+      .on("broadcast", { event: "message" }, ({ payload }) => {
+        setMessages((prev) => {
+          const newMsg: ChatMessage = {
+            id: payload.id || crypto.randomUUID(),
+            role: payload.role || "assistant",
+            content: payload.content,
+            created_at: payload.created_at || new Date().toISOString(),
+          };
+          if (prev.some((m) => m.id === newMsg.id)) return prev;
+          return [...prev, newMsg];
+        });
+        if (payload.role === "assistant") setIsLoading(false);
+      })
+      .subscribe((status) => {
+        setIsConnected(status === "SUBSCRIBED");
+      });
 
     return () => {
-      ws.close();
+      supabase.removeChannel(channel);
     };
   }, [agentId, conversationId]);
 

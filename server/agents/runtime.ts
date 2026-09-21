@@ -6,7 +6,7 @@ import { agents, agentMessages, agentConversations, orgAiConfig, agentIdentity, 
 import { eq, and, desc } from 'drizzle-orm';
 import { decrypt } from '../lib/crypto';
 import { getAgentContext } from './context';
-import { broadcast } from '../ws/realtime';
+import { broadcast } from '../lib/supabase';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -260,9 +260,8 @@ export class AgentRuntime {
       })
       .returning();
 
-    // Broadcast via WebSocket to subscribed clients
-    broadcast(`agent:${conversationId}`, {
-      type: 'message',
+    // Broadcast via Supabase Realtime to subscribed clients
+    await broadcast(`agent:${conversationId}`, 'message', {
       id: msg.id,
       role: 'assistant',
       content,
