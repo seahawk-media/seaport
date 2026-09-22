@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Mail, Key, ImageIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,37 @@ import { toast } from 'sonner';
 export const UserSettings = () => {
   const { user } = useAuth();
   const [fullName, setFullName] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    setChangingPassword(true);
+    const { error } = await authClient.changePassword({
+      currentPassword,
+      newPassword,
+      revokeOtherSessions: true,
+    });
+    setChangingPassword(false);
+
+    if (error) {
+      toast.error(error.message || 'Failed to update password');
+      return;
+    }
+
+    toast.success('Password updated');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
 
   const meQuery = trpc.profiles.me.useQuery(undefined, {
     enabled: !!user,
@@ -135,11 +167,56 @@ export const UserSettings = () => {
             <TabsContent value="security" className="space-y-6">
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Password</h3>
+                  <h3 className="text-lg font-semibold mb-2">Change password</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Password management is handled through your authentication provider.
+                    You'll stay signed in on this device; other sessions are signed out.
                   </p>
                 </div>
+
+                <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+                  <div className="space-y-2">
+                    <Label htmlFor="current-password">Current password</Label>
+                    <Input
+                      id="current-password"
+                      type="password"
+                      autoComplete="current-password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">New password</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      autoComplete="new-password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      minLength={8}
+                      required
+                    />
+                    <p className="text-sm text-muted-foreground">At least 8 characters.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm new password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      autoComplete="new-password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <Button type="submit" disabled={changingPassword}>
+                    <Key className="h-4 w-4 mr-2" />
+                    {changingPassword ? 'Updating...' : 'Update password'}
+                  </Button>
+                </form>
               </div>
             </TabsContent>
           </Tabs>
