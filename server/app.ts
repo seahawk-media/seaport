@@ -13,7 +13,11 @@ export const app = new Hono();
 
 // Liveness check — confirms the API is reachable and which commit is serving it.
 app.get('/api/health', (c) => {
-  return c.json({ ok: true, commit: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local' });
+  return c.json({
+    ok: true,
+    commit: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
+    pathSeenByServer: c.req.path,
+  });
 });
 
 // Security headers middleware
@@ -62,3 +66,12 @@ app.use('/trpc/*', trpcHandler('/trpc'));
 
 // File uploads
 app.route('/', uploadsApp);
+
+// On Vercel this app owns every /api/* path, so an unmatched request means the
+// path arrived differently than expected — report it rather than 404 silently.
+// Not registered locally, where server/index.ts serves the SPA from here.
+if (process.env.VERCEL) {
+  app.all('*', (c) =>
+    c.json({ error: 'No route matched', pathSeenByServer: c.req.path, url: c.req.url }, 404),
+  );
+}
