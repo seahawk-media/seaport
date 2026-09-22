@@ -4,7 +4,6 @@ node_modules/
 # Build output
 dist/
 drizzle/
-api/index.js
 
 # Environment
 .env

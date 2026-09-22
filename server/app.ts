@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
@@ -11,16 +11,9 @@ import { rateLimit } from './middleware/rate-limit.js';
 
 export const app = new Hono();
 
-// DEBUG: unmistakable log at the very first point of Hono's middleware chain
-app.use('*', async (c, next) => {
-  console.log('[HONO-ENTRY]', c.req.method, c.req.path);
-  await next();
-});
-
-// DEBUG: echoes back request info directly in the response body, for ANY method,
-// so we can see the result in the Network tab without depending on Runtime Logs.
-app.all('/api/debug-echo', (c) => {
-  return c.json({ ok: true, method: c.req.method, path: c.req.path });
+// Liveness check — confirms the API is reachable and which commit is serving it.
+app.get('/api/health', (c) => {
+  return c.json({ ok: true, commit: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local' });
 });
 
 // Security headers middleware
@@ -54,15 +47,18 @@ app.on(['GET', 'POST'], '/api/auth/**', async (c) => {
   return auth.handler(c.req.raw);
 });
 
-// tRPC handler
-app.use('/trpc/*', async (c) => {
-  return fetchRequestHandler({
-    endpoint: '/trpc',
+// tRPC handler. Mounted under /api so Vercel routes it to this function via
+// filesystem routing; /trpc is kept for local dev and older clients.
+const trpcHandler = (endpoint: string) => async (c: Context) =>
+  fetchRequestHandler({
+    endpoint,
     req: c.req.raw,
     router: appRouter,
     createContext: () => createContext(c),
   });
-});
+
+app.use('/api/trpc/*', trpcHandler('/api/trpc'));
+app.use('/trpc/*', trpcHandler('/trpc'));
 
 // File uploads
 app.route('/', uploadsApp);

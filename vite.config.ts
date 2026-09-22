@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       "/trpc": "http://localhost:3000",
       "/api": "http://localhost:3000",
-      "/ws": { target: "ws://localhost:3000", ws: true },
     },
   },
   plugins: [
