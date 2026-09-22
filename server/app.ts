@@ -13,22 +13,7 @@ export const app = new Hono();
 
 // Liveness check — confirms the API is reachable and which commit is serving it.
 app.get('/api/health', (c) => {
-  return c.json({
-    ok: true,
-    commit: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
-    pathSeenByServer: c.req.path,
-    // Presence only — never the values.
-    env: Object.fromEntries(
-      [
-        'DATABASE_URL',
-        'SESSION_SECRET',
-        'BETTER_AUTH_SECRET',
-        'SITE_URL',
-        'SUPABASE_URL',
-        'SUPABASE_SERVICE_ROLE_KEY',
-      ].map((k) => [k, Boolean(process.env[k])]),
-    ),
-  });
+  return c.json({ ok: true, commit: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local' });
 });
 
 // Security headers middleware
