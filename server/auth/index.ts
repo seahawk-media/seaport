@@ -27,7 +27,14 @@ export const auth = betterAuth({
     },
     expiresIn: 60 * 60 * 24 * 7, // 7 days
   },
-  trustedOrigins: process.env.SITE_URL ? [process.env.SITE_URL] : [],
+  // Better Auth rejects requests whose Origin isn't trusted, so include the
+  // canonical site URL plus the URLs Vercel serves this deployment on —
+  // otherwise auth breaks on *.vercel.app and on preview deployments.
+  trustedOrigins: [
+    process.env.SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
+    process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+  ].filter((origin): origin is string => Boolean(origin)),
   databaseHooks: {
     user: {
       create: {
