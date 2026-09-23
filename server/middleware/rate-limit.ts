@@ -15,6 +15,13 @@ export function rateLimit(opts: {
   name: string;
 }) {
   return async (c: Context, next: Next) => {
+    // Only count state-changing requests. The client polls GET
+    // /api/auth/get-session on every page load, which would otherwise burn
+    // through the quota and lock legitimate users out of signing in.
+    if (c.req.method === 'GET' || c.req.method === 'HEAD') {
+      return next();
+    }
+
     const ip = c.req.header('x-forwarded-for')?.split(',')[0]?.trim()
       || c.req.header('x-real-ip')
       || 'unknown';
